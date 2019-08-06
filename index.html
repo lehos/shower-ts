@@ -64,24 +64,16 @@
 
     <section class="slide">
         <h2>Интерфейс (тип) и простой рефакторинг</h2>
-        <div>Было</div>
         <pre>
             <code>
 function greet(user) {
   console.log(user.name)
 }
-            </code>
-        </pre>
-    </section>
 
-    <section class="slide">
-        <h2>Интерфейс (тип) и простой рефакторинг</h2>
-        <div>Структура юзера изменилась (name -> firstName)</div>
+// Структура user изменилась (name -> firstName)
 
-        <pre>
-            <code>
 function greet(user) {
-  console.log(user.name) <span class="comment">Упадет!</span>
+  console.log(user.name) // упадет в рантайме
 }
             </code>
         </pre>
