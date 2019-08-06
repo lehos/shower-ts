@@ -22,11 +22,11 @@
             font-size: 13px;
         }
 
-        .slide h2 {
-            margin-bottom: 10px;
+        body h2 {
+            margin-bottom: 10px !important;
         }
 
-        .slide pre {
+        body pre {
             margin-bottom: 0;
         }
 
@@ -46,23 +46,17 @@
     </header>
 
     <section class="slide" id="main">
-        <h2>Как нам помогает TypeScript</h2>
+        <h2 class="shout shrink">Как помогает TypeScript</h2>
 
-        <style>
-            #main h2 {
-                font-size: 60px;
-                text-align: center;
-                line-height: 50vh;
-            }
-        </style>
+
     </section>
 
     <section class="slide">
         <h2>Общее</h2>
         <ul>
             <li>TS - язык, суперсет над JS, система типов и компилятор</li>
-            <li class="next">Open-source, Разрабатывается Microsoft</li>
-            <li class="next">TypeScript, VS Code, Slack, Angular2+, Vue3, Ant.design</li>
+            <li class="next">Open-source, разрабатывается Microsoft</li>
+            <li class="next">TypeScript, VS Code, Slack, Angular2+, Vue3, Ant.design ...</li>
             <li class="next">Отдельная типизация - @types и .d.ts</li>
             <li class="next">Некоторые редакторы используют TS тайпинги для IntelliSense</li>
         </ul>
@@ -105,10 +99,12 @@ interface User {
   firstName: string
   lastName: string
 }
+
 function greet(user: User) {
   console.log(user.<span class="mistype">name</span>) <span class="comment">// TS предупреждает</span>
   user.| <span class="comment">// автокомплит!</span>
 }
+
 function <span class="mistype">greet</span>('wrong type param') <span class="comment">// ошибка</span>
             </code>
         </pre>
@@ -121,22 +117,22 @@ function <span class="mistype">greet</span>('wrong type param') <span class="com
         <pre>
             <code>
 type Props = {
-  onChange: (event) => void
-  value: string
+  onChange: (value: string) => void
+  value?: string
 }
 &nbsp;
 function Input(props: Props) {
   return &lt;StyledInput {...props} /&gt;
 }
 &nbsp;
-&lt;Input value="" onChange={e => {console.log(e)}} />
+&lt;Input value="" onChange={val => { console.log(val) }} />
 &lt;<span class="mistype">Input</span> <span class="mistype">value</span>={1} /> <span class="comment">// ошибки</span>
             </code>
         </pre>
     </section>
 
     <section class="slide">
-        <h2>Class based components</h2>
+        <h2>Class-based компоненты</h2>
 
         <pre>
             <code>
@@ -147,13 +143,13 @@ type State = {
   value: string
 }
 class FormInput extends Component&lt;Props, State> {
-  onChange = (e) => { this.setState({ value: e.target.value })}
+  onChange = value => { this.setState({ value })}
   render() {
     const {name} = this.props <span class="comment">// типизирован</span>
     const {value} = this.state <span class="comment">// типизирован</span>
     return <>
       &lt;Input value={value} onChange={onChange} />
-      {value && value.split('').reverse().join()}
+      {value && value.split('').reverse().join('')}
       {value.<span class="mistype">reverse</span>()} {<span class="comment">/* TS2339: Property 'reverse' does not exist on type 'string'. */</span>}
     &lt;/>
             </code>
@@ -161,7 +157,7 @@ class FormInput extends Component&lt;Props, State> {
     </section>
 
     <section class="slide">
-        <h2>Union of strings</h2>
+        <h2>Енамы (Union of strings)</h2>
 
         <pre>
 <code>
@@ -172,7 +168,7 @@ type Props = {
 }
 
 function Input(props: Props) {
-	return <StyledInput {...props} />
+	return &lt;StyledInput {...props} />
 }
 
 &lt;Input <span class="mistype">size</span>="smoll" /> {/* Ошибка */}
@@ -181,21 +177,201 @@ function Input(props: Props) {
     </section>
 
     <section class="slide">
+        <h2>Переиспользование типов</h2>
+
+        <pre>
+<code>
+type Props = {
+	size?: 'small' | 'large' // нарушаем принцип DRY
+}
+
+class FormInput extends Component&lt;Props, State> {}
+
+</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Переиспользование типов</h2>
+
+        <pre>
+<code>
+// Input.tsx
+export type InputSize = 'small' | 'large'
+
+type Props = {
+	size?: InputSize
+    ...
+}
+
+// FormInput.tsx
+import { Input, InputSize } from './Input'
+
+type Props = {
+	size?: InputSize // уже лучше
+}
+</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Type intersection</h2>
+
+        <pre>
+<code>
+// Input.tsx
+export type InputProps = {
+	size?: InputSize
+}
+type Props = InputProps & {
+    value: string
+    onChange: (value: string) => void
+}
+
+// FormInput.tsx
+import { Input, InputProps } from './Input'
+
+class FormInput extends Component&lt;InputProps, State> {}
+
+</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Наследование интерфейсов</h2>
+
+        <pre>
+<code>
+// Input.tsx
+export interface InputProps {
+	size?: InputSize
+}
+interface Props extends InputProps {
+    value: string
+    onChange: (value: string) => void
+}
+
+// FormInput.tsx
+import { Input, InputProps } from './Input'
+
+class FormInput extends Component&lt;InputProps, State> {}
+
+</code>
+        </pre>
+    </section>
+
+    <section class="slide">
+        <h2>Условные типы</h2>
+
+        <pre>
+<code>
+// Input.tsx
+export type InputProps = {
+    value: string
+    onChange: (value: string) => void
+	size?: InputSize
+}
+
+// FormInput.tsx
+import { Input, InputProps } from './Input'
+
+type Props = Omit&lt;InputProps, 'value' | 'onChange'> // мой выбор
+</code>
+        </pre>
+    </section>
+
+
+
+    <section class="slide">
+        <h2>Mapped types и keyof typeof</h2>
+
+        <pre>
+<code>
+export type Status = 'guest' | 'admin' | 'editor'
+
+export const statuses: { [K in Status]: string } = {
+    guest: 'Гость',
+    admin: 'Админ',
+    editor: 'Редактор'
+}
+
+// или так
+export const statuses = {
+    guest: 'Гость',
+    admin: 'Админ',
+    editor: 'Редактор'
+}
+
+export type Status = keyof typeof statuses
+</code>
+        </pre>
+    </section>
+
+
+    <section class="slide">
+        <h2>Иконки</h2>
+
+        <div class="columns three">
+            <pre>
+<code>
+Icon
+|--icons
+|   |--check.svg
+|   |--close.svg
+|   |--index.ts
+|--Icon.tsx
+</code>
+            </pre>
+            <pre>
+<code>
+// icons/index.ts
+export { default as check } from './check.svg';
+export { default as close } from './close.svg';
+
+// Icon.tsx
+import * as icons from './icons';
+type Props = {
+    icon: keyof typeof icons
+}
+export function Icon(props: Props) {
+    const CurrentIcon = icons[props.icon];
+    return &lt;CurrentIcon />
+}
+
+// somewhere
+&lt;Icon <span class="mistype">icon</span>="chek"/> // автокомплит и тайпчек по названию иконок
+</code>
+            </pre>
+        </div>
+
+    </section>
+
+
+    <section class="slide">
         <h2>Рекомендации</h2>
 
         <ul>
             <li>Попробуйте, если не пробовали =)</li>
-            <li class="next">Редактор с поддержкой TS (VS Code, WebStorm)</li>
+            <li class="next">Редактор с хорошей поддержкой TS (VS Code, WebStorm)</li>
             <li class="next">Strict Mode</li>
-            <li class="next">Избегайте <code>any</code>, стремитесь к 100% покрытию типами</li>
+            <li class="next">Избегайте <code>any</code> и <code>// @ts-ignore</code>, стремитесь к 100% покрытию типами</li>
             <li class="next">Typecheck в гит хуках</li>
         </ul>
     </section>
 
+
+
+
+
     <section class="slide">
         <h2>Сcылки</h2>
 
-
+        <h3>
+            <a href="https://basarat.gitbooks.io/typescript/">TypeScript Deep Dive</a>
+        </h3>
+        <a href="http://lehos.github.io/shower-ts/">Презентация</a>
+        <br>
+        <a href="http://github.com/lehos/shower-ts/">Github</a>
     </section>
 
     <div class="progress"></div>
