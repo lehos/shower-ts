@@ -23,8 +23,9 @@
   "scripts": {
     "pdf": "shower pdf",
     "start": "shower serve",
-    "prepare": "shower prepare --files '**' --files '!{docs,node_modules,prepared}{,/**}' --files '!*.{md,toml,json}'",
-    "archive": "shower archive --files '**' --files '!{docs,node_modules,prepared}{,/**}' --files '!*.{md,toml,json}'",
-    "publish": "shower publish --files '**' --files '!{docs,node_modules,prepared}{,/**}' --files '!*.{md,toml,json}'"
+    "prepare": "shower prepare --files '**' --files '!{docs,node_modules,prepared}{,/**}' --files '!*.{md,toml,json,zip}'",
+    "archive": "shower archive --files '**' --files '!{docs,node_modules,prepared}{,/**}' --files '!*.{md,toml,json,zip}'",
+    "publish": "shower publish --files '**' --files '!{docs,node_modules,prepared}{,/**}' --files '!*.{md,toml,json,zip}'",
+    "all": "npm run pdf && npm run prepare && npm run archive && npm run publish"
   }
 }
