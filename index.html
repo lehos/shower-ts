@@ -301,6 +301,66 @@ type Props = Omit&lt;InputProps, 'value' | 'onChange'> // мой выбор
         </pre>
     </section>
 
+    <section class="slide">
+        <h2>Массивы</h2>
+
+        <pre>
+<code>
+type User = {
+    id: string
+    name: string
+}
+
+function getUsers(): Users[] {...}
+
+const users = getUsers()
+
+users.forEach(el => el.|) // TS знает, что el имеет тип User
+</code>
+        </pre>
+    </section>
+
+
+    <section class="slide">
+        <h2>Index signature</h2>
+
+        <div class="columns three">
+            <pre>
+<code>
+{
+    '1': {
+        id: '1',
+        name: 'Foo'
+    },
+    '2': {
+        id: '2',
+        name: 'Bar'
+    }
+}
+</code>
+            </pre>
+            <pre>
+<code>
+type User = {
+    id: string
+    name: string
+}
+
+const users: <mark>{ [key: string]: User }</mark> = {
+    <span class="mistype">foo</span>: { // не хватает поля name
+        id: 'foo'
+    },
+    bar: {
+        id: 'bar',
+        <span class="mistype">unknown</span>: '' // такого поля нет в User
+    },
+}
+
+</code>
+            </pre>
+        </div>
+    </section>
+
 
 
     <section class="slide">
