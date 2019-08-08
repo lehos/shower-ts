@@ -484,7 +484,7 @@ export { default as close } from './close.svg';
 // Icon.tsx
 import * as icons from './icons';
 type Props = {
-  icon: keyof typeof icons
+  icon: keyof typeof icons // 'check' | 'close'
 }
 export function Icon(props: Props) {
   const CurrentIcon = icons[props.icon];
